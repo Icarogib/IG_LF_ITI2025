@@ -8,6 +8,33 @@
 
 using namespace std;
 
+void sort(vector<int> &simbPresentes, int contSimb[])
+{
+  int n = simbPresentes.size();
+
+  for (int i = n ; i >= 0; i--) {
+    
+    bool flag = false;
+    for (int j = n - 1; j > n - i; j--) {
+      
+      int letra = simbPresentes.at( j );
+      int letra1 = simbPresentes.at( j - 1 );
+
+      //cout << "vez: [" << i << "][" << j <<"] - contSimb[" << letra << "]: " << contSimb[letra] << " > contSimb[" << letra1 << "]: " << contSimb[letra1] << endl;
+
+      if (contSimb[letra] > contSimb[letra1]) {
+        swap(simbPresentes[j], simbPresentes[j-1]);
+        flag = true;
+      }
+    }
+
+    if (!flag)
+      break;
+  }
+//  print(v, n);
+
+}
+
 int main()
 {
   string input = "ICARO SALSICHA UFPB";
@@ -26,9 +53,9 @@ int main()
                       //N     O      P     Q     R    S    T      U      V    W      X     Y    Z    ESPACO
 
   // Vector com as letras presentes.
-  vector <int> letrasPres, letrasOrdem; 
-
-
+  vector <int> letrasPres; 
+  vector <int> letrasOrdem;
+  
   for (int i = 0; i < input.length(); i++) {          // Loop para contar cada char
       char c = input[i];
 
@@ -47,6 +74,27 @@ int main()
 
   }
 
+  // Funcao para ordenar por quantidade
+  /*
+  
+  cout << "\nInicial: ";
+  for ( int i :  letrasPres){
+    cout << i << " ";
+  }
+  cout << endl;
+  */
+
+  sort(letrasPres, countLetters);
+  
+  /*
+  cout << "\nPos sort: ";
+  for ( int i :  letrasPres){
+    cout << i << " ";
+  }
+  cout << endl;
+  */
+  /*
+  // Funcao para ordenar por probabilidade.
   for ( int i : ordemProb){
     if (find(letrasPres.begin(), letrasPres.end(), i) == letrasPres.end()){
       cout << "Nao tem a letra: " << (char)('A' + i) << endl;
@@ -56,8 +104,10 @@ int main()
       cout << "Possui a letra:  " << (char)('A' + i) << endl;
     }
   }
+  */
   
   // 3 Prints para saber se foi ordenado e as letras
+/*
   cout << "Letras Presentes: ";
   for (int i : letrasPres ){
     cout << i << " ";
@@ -73,8 +123,8 @@ int main()
     else
       cout << (char)(i + 'A') << "  ";
   }
+*/
 
-/*
   for (int i = 0; i < 27; i++) {                    // Printamos as letras e quantidade de vezes que elas aparecem
     if ( i != 26 )
       cout << "[" << i << "]"<< (char)('A' + i) << ": " << countLetters[i] << endl;
@@ -82,7 +132,7 @@ int main()
       cout << "Espaco" << ": " << countLetters[26] << endl;
 
   } 
-*/   
+ 
 
 
   return 0;
