@@ -5,6 +5,7 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <bitset>
 
 using namespace std;
 
@@ -97,39 +98,46 @@ int main()
   // Funcao para ordenar por probabilidade.
   for ( int i : ordemProb){
     if (find(letrasPres.begin(), letrasPres.end(), i) == letrasPres.end()){
-      cout << "Nao tem a letra: " << (char)('A' + i) << endl;
+      //cout << "Nao tem a letra: " << (char)('A' + i) << endl;
     }
     else{
       letrasOrdem.push_back (i);
-      cout << "Possui a letra:  " << (char)('A' + i) << endl;
+      //cout << "Possui a letra:  " << (char)('A' + i) << endl;
     }
   }
   */
   
   // 3 Prints para saber se foi ordenado e as letras
 /*
-  cout << "Letras Presentes: ";
+  cout << "I Letras Presentes: \t";     // mostra o index das letras presentes
   for (int i : letrasPres ){
-    cout << i << " ";
+    cout << i << "\t ";
   }
-  cout << "\nIndexs P Ordenadas: ";
+  cout << "\nLetras Presentes: \t";
+  for (int i : letrasPres ){          // mostra o char da letra presente
+    if ( i == 26 )
+      cout << "\t " << (char)(32);
+    else
+      cout << (char)(i + 'A') << "\t  ";
+  }
+  cout << "\nIndexs P Ordenadas: \t"; // mostra o index das letras ordenadas pela probabilidade
   for (int i : letrasOrdem ){
-    cout << i << "  ";
+    cout << i << "\t  ";
   }
-  cout << "\nLetras P Ordenadas:    ";
+  cout << "\nLetras P Ordenadas: \t"; // mostra a letra ordenada pela probabilidade
   for (int i : letrasOrdem ){
     if ( i == 26 )
-      cout << (char)(32);
+      cout << "\t " << (char)(32);
     else
-      cout << (char)(i + 'A') << "  ";
+      cout << (char)(i + 'A') << "\t  ";
   }
 */
-
+  cout << endl;
   for (int i = 0; i < 27; i++) {                    // Printamos as letras e quantidade de vezes que elas aparecem
     if ( i != 26 )
       cout << "[" << i << "]"<< (char)('A' + i) << ": " << countLetters[i] << endl;
     else
-      cout << "Espaco" << ": " << countLetters[26] << endl;
+      cout << "[26]Espaco" << ": " << countLetters[26] << endl;
 
   } 
  
