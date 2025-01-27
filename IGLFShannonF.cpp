@@ -10,7 +10,8 @@
 using namespace std;
 
 void algoritmoShannonFano(vector<int>& occurrenceNums, vector<string>& codeWord, int startRange, int finishRange) {
-    if (startRange >= finishRange) return; // Condição de parada
+    if (startRange >= finishRange || startRange == finishRange-1) return; // Condição de parada
+
 
     int total = 0;
     for (int i = startRange; i < finishRange; i++) {
@@ -86,7 +87,7 @@ void sort(vector<int> &simbPresentes, int contSimb[])
 int main()
 {
   //string input = "DBABCACBAA";
-  string input = "CCCBBBBBBBCCCAAAAAAAAAAAAAAADDDDDDEEEEEE";
+  string input = "CCCBBBBBBBCCCAAAAAAAAAAAAAAADDDDDDEEEEE";
   cout << "---------- Frase Inserida ----------\n\t" << input << endl;
   
   // Contagem de cada letra em específico (em ordem alfabética)
