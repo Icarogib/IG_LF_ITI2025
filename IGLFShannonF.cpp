@@ -1,3 +1,21 @@
+/*
+Ideia "nova" icaro 27/01/25: while que so acaba quando o ultimo recebe um true (acabou? true)
+                             e o for passaria em cada um, e pularia pro proximo false.
+                              sendo false, ele vai receber um left shift, e depois 1 ou 0
+                              e nisso, a gnt guardaria tb a quantidade de bits (pra mostrar depois) 
+
+                              while(all true){
+
+                                for( i : letras )
+                                  // Calcula meio termo para divisao
+                                  // divide no meio e da esquerda para direita, left shift, 0 ou 1
+                                  // guarda quantidade de bits
+                                  // if feito == true, pula pro proximo (false)
+                              }
+
+*/
+
+
 #include <iostream>
 #include <algorithm>
 #include <ctime>
@@ -38,6 +56,17 @@ void sort(vector<int> &simbPresentes, int contSimb[])
 
 int main()
 {
+  int te = 0;
+  cout << "stte: " << te << endl;
+  te = te << 1;
+  cout << "lste: " << te << endl;
+  te++;
+  cout << "++te: " << te << endl;
+  //te = te << 1;
+  //cout << "te: " << te << endl;
+  cout << sizeof(te);
+  return 2;
+
   string input = "ICARO SALSICHA UFPB";
   cout << input << endl;
   
@@ -86,7 +115,18 @@ int main()
   */
 
   sort(letrasPres, countLetters);
-  
+
+  int dif1, dif2, contador = 0;
+  vector<int> teste;
+  int max = letrasPres.size() / 2;
+  cout << "\nMax: " <<max << endl;
+
+  for ( int i :  letrasPres){
+    contador += countLetters[i];
+  }
+
+  // para printar em binario bitset<numBits>(intvar);
+
   /*
   cout << "\nPos sort: ";
   for ( int i :  letrasPres){
@@ -133,6 +173,11 @@ int main()
   }
 */
   cout << endl;
+
+  
+
+  /*
+  
   for (int i = 0; i < 27; i++) {                    // Printamos as letras e quantidade de vezes que elas aparecem
     if ( i != 26 )
       cout << "[" << i << "]"<< (char)('A' + i) << ": " << countLetters[i] << endl;
@@ -140,7 +185,7 @@ int main()
       cout << "[26]Espaco" << ": " << countLetters[26] << endl;
 
   } 
- 
+  */
 
 
   return 0;
