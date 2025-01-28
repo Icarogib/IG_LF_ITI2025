@@ -12,33 +12,32 @@ using namespace std;
 void algoritmoShannonFano(vector<int>& occurrenceNums, vector<string>& codeWord, int startRange, int finishRange) {
     if (startRange >= finishRange || startRange == finishRange-1) return; // Condição de parada
 
-
     int total = 0;
     for (int i = startRange; i < finishRange; i++) {
         total += occurrenceNums[i];
-        cout << "total: " << total << endl;
+        //cout << "total: " << total << endl;
     }
 
     int leftSum = 0, rightSum = total, splitIndex = startRange;
     int minDifference = abs(total);
 
     // Encontrar o ponto de divisão ideal
-    for (int i = startRange; i < finishRange; i++) {
+    for (int i = startRange; i <= finishRange; i++) {
         leftSum += occurrenceNums[i];
         rightSum -= occurrenceNums[i];
         int difference = abs(leftSum - rightSum);
 
-        cout << "minDifference: " << minDifference << endl;
-        cout << "difference: " << difference << endl;
+        //cout << "minDifference: " << minDifference << endl;
+        //cout << "difference: " << difference << endl;
 
         if (difference < minDifference) {
             minDifference = difference;
-            cout << "minDifference (if): " << minDifference << endl;
+            //cout << "minDifference (if): " << minDifference << endl;
             splitIndex = i;
-        }
+        }else break;
     }
 
-    cout << "splitIndex: " << splitIndex << endl;
+    //cout << "splitIndex: " << splitIndex << endl;
 
     // Atribuir "0" para o grupo esquerdo e "1" para o direito
     for (int i = startRange; i < finishRange; i++) {
@@ -47,14 +46,14 @@ void algoritmoShannonFano(vector<int>& occurrenceNums, vector<string>& codeWord,
         else
             codeWord[i] += "1";
         
-        cout << codeWord[i] << endl;
+        //cout << codeWord[i] << endl;
     }
 
-    cout << "---------------------" << endl;
+    //cout << "---------------------" << endl;
 
     // Recursão para os dois grupos
-    algoritmoShannonFano(occurrenceNums, codeWord, startRange, splitIndex);
-    algoritmoShannonFano(occurrenceNums, codeWord, splitIndex + 1, finishRange);
+    algoritmoShannonFano(occurrenceNums, codeWord, startRange, splitIndex+1);
+    algoritmoShannonFano(occurrenceNums, codeWord, splitIndex+1, finishRange);
 }
 
 void sort(vector<int> &simbPresentes, int contSimb[])
@@ -84,17 +83,27 @@ void sort(vector<int> &simbPresentes, int contSimb[])
 
 }
 
+// Funcao para ordenar por probabilidade.
+void sortByProb( vector<int> simbPresentes, vector<int> &newOrdenado, vector<int> ordemProb ){
+  for ( int i : ordemProb){
+    
+    if (find(simbPresentes.begin(), simbPresentes.end(), i) == simbPresentes.end()) continue;
+    else
+      newOrdenado.push_back (i);
+  }
+
+}
+
 int main()
 {
-  //string input = "DBABCACBAA";
   string input = "SALSICHA";
-  cout << "---------- Frase Inserida ----------\n\t" << input << endl;
+  cout << "\n---------- Frase Inserida ----------\nFrase:\t" << input << endl;
   
   // Contagem de cada letra em específico (em ordem alfabética)
   int countLetters[27] = {0};
   
   // Ordem da lista de probabilidade em ordem do documento
-  int ordemProb[27] = {26, 4, 0, 14, 18, 17, 8, 13, 3, 12, 20, 19, 2, 11, 15, 21, 6, 7, 16, 1, 5, 25, 9, 23, 10, 22, 24};
+  const vector<int> ordemProb = {26, 4, 0, 14, 18, 17, 8, 13, 3, 12, 20, 19, 2, 11, 15, 21, 6, 7, 16, 1, 5, 25, 9, 23, 10, 22, 24};
 
   // Probabilidade de cada letra/espaco
                       //A     B      C      D     E    F    G      H     I    J    K     L    M
@@ -125,35 +134,33 @@ int main()
   }
 
 
-  // ====================================== COMECA DAQUI SALSICHA
-  
-  // Bubble sort antes de qualquer operacao!
+  // ====================================== Sort ==========================
+
+  // Sort por probabilidade e cria um novo array ordenado (para nao alterar o original)
+  //sortByProb( letrasPres, letrasOrdem, ordemProb );
+
+  // Bubble sort antes de qualquer operacao! (alterando o original)
   sort(letrasPres, countLetters);
 
-  vector<string> palavraCod;  // Guarda a palavra codigo (ex: 000 ou 101... etc)
-  vector<int> quantLetraOrd;  // Guarda a quantidade de cada letra (em ordem decrescente)
+  // Guarda a palavra codigo (ex: 000 ou 101... etc)
+  vector<string> palavraCod;  
+  // Guarda a quantidade de cada letra (em ordem decrescente)
+  vector<int> quantLetraOrd;  
 
   // Adiciona as quantidades de cada letra individual em um vector (ex: A = 4... B = 3...)
   for ( int i : letrasPres ){
     quantLetraOrd.push_back(countLetters[i]);
-    //cout << "Push num: " << countLetters[i] << " para letra " << (char)('A' + i) << endl; // Apenas um print de quantidade de letra e qual letra
-  }
-
-  // print vector quantidade de cada letra em ordem
-  for ( int i : quantLetraOrd){
-    cout << i << ", ";
   }
 
   // Passamos a quantidade de letras presentes (ex: abcd = 4 letras)
   int quantPorLetra = letrasPres.size();
-  cout << "\nTamanho do vector de letras: " << quantPorLetra << endl;
   
   // Atribuimos uma string "vazia" ao vector de palavra codigo para adicionarmos 0 e 1 quando necessario
   for ( int i = 0; i < quantPorLetra; i++ ){
     palavraCod.push_back("");
   }
   
-  cout << "---------- Shannon Fano -----------" << endl;
+  cout << "\n---------- Shannon Fano -----------" << endl;
   
   algoritmoShannonFano( quantLetraOrd, palavraCod, 0, quantPorLetra );
 
@@ -161,7 +168,6 @@ int main()
   for ( int i : quantLetraOrd){
     cout << "\t(" << i << ")";
   }
-
   cout << "\nLetra do Cod: ";
   for ( int i : letrasPres ){
     if ( i == 26 )
@@ -174,23 +180,10 @@ int main()
     cout << "\t" << palavraCod.at(i) ;
   }
 
-  /*
-  // Funcao para ordenar por probabilidade.
-  for ( int i : ordemProb){
-    if (find(letrasPres.begin(), letrasPres.end(), i) == letrasPres.end()){
-      //cout << "Nao tem a letra: " << (char)('A' + i) << endl;
-    }
-    else{
-      letrasOrdem.push_back (i);
-      //cout << "Possui a letra:  " << (char)('A' + i) << endl;
-    }
-  }
-  */
-
-  cout << "\n---------- Codificacao -----------\n" << endl;
 
 
-  //quantPorLetra = input.size();
+  cout << "\n\n---------- Codificacao -----------" << endl;
+
   string codificado = "";
 
   // Gravação dos bits.
@@ -198,11 +191,11 @@ int main()
     char c = input[i];
     char p;
 
-    cout << "\nc: " << c;
+    //cout << "\nc: " << c;
 
     for ( int j = 0; j < letrasPres.size(); j++ ){
       
-      cout << "\t / [" << i << "][" << j << "] - ";
+      //cout << "\t / [" << i << "][" << j << "] - ";
 
       if ( c == ' ' && letrasPres[j] == 26 ){
         codificado += palavraCod.at(j);
@@ -210,50 +203,20 @@ int main()
       } 
       else{
         p = (char)('A' + letrasPres[j]);
-        cout << "p: " << p;
+        //cout << "p: " << p;
         
         if ( c == p ){
-          cout << " = igual" << endl;
+          //cout << " = igual" << endl;
           codificado += palavraCod.at(j);
           break;
         }
           
-        cout << "\t"<< endl;
+        //cout << "\t"<< endl;
       }
     }
-    cout << "\nPalavra codigo final: " << codificado << endl;
-/*
-
-    
-    if ( c == ' ' ){                                // Se for um espaco, conte
-      
-    }
-    else 
-      if (c < 'A' || c > 'Z') continue;             // Verifique se há o range que queremos de letras (apenas maiusculas)
-        
-*/
-    
-
   }
 
-  
-  cout << "\nQuant let: ";
-  for ( int i : quantLetraOrd){
-    cout << "\t(" << i << ")";
-  }
-
-  cout << "\nLetra do Cod: ";
-  for ( int i : letrasPres ){
-    if ( i == 26 )
-      cout << "\t_";
-    else
-      cout << "\t" << (char)( 'A' + i );
-  }
-  cout << "\nCodigo Letra: ";
-  for ( int i = 0; i < quantPorLetra; i++ ){
-    cout << "\t" << palavraCod.at(i) ;
-  }
-
+  cout << "\nPalavra codigo final: " << codificado << endl;
 
   return 0;
 }
