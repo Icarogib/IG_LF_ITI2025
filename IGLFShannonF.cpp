@@ -87,7 +87,7 @@ void sort(vector<int> &simbPresentes, int contSimb[])
 int main()
 {
   //string input = "DBABCACBAA";
-  string input = "CCCBBBBBBBCCCAAAAAAAAAAAAAAADDDDDDEEEEE";
+  string input = "SALSICHA";
   cout << "---------- Frase Inserida ----------\n\t" << input << endl;
   
   // Contagem de cada letra em específico (em ordem alfabética)
@@ -186,6 +186,74 @@ int main()
     }
   }
   */
+
+  cout << "\n---------- Codificacao -----------\n" << endl;
+
+
+  //quantPorLetra = input.size();
+  string codificado = "";
+
+  // Gravação dos bits.
+  for ( int i = 0; i < input.size(); i++){
+    char c = input[i];
+    char p;
+
+    cout << "\nc: " << c;
+
+    for ( int j = 0; j < letrasPres.size(); j++ ){
+      
+      cout << "\t / [" << i << "][" << j << "] - ";
+
+      if ( c == ' ' && letrasPres[j] == 26 ){
+        codificado += palavraCod.at(j);
+        break;
+      } 
+      else{
+        p = (char)('A' + letrasPres[j]);
+        cout << "p: " << p;
+        
+        if ( c == p ){
+          cout << " = igual" << endl;
+          codificado += palavraCod.at(j);
+          break;
+        }
+          
+        cout << "\t"<< endl;
+      }
+    }
+    cout << "\nPalavra codigo final: " << codificado << endl;
+/*
+
+    
+    if ( c == ' ' ){                                // Se for um espaco, conte
+      
+    }
+    else 
+      if (c < 'A' || c > 'Z') continue;             // Verifique se há o range que queremos de letras (apenas maiusculas)
+        
+*/
+    
+
+  }
+
+  
+  cout << "\nQuant let: ";
+  for ( int i : quantLetraOrd){
+    cout << "\t(" << i << ")";
+  }
+
+  cout << "\nLetra do Cod: ";
+  for ( int i : letrasPres ){
+    if ( i == 26 )
+      cout << "\t_";
+    else
+      cout << "\t" << (char)( 'A' + i );
+  }
+  cout << "\nCodigo Letra: ";
+  for ( int i = 0; i < quantPorLetra; i++ ){
+    cout << "\t" << palavraCod.at(i) ;
+  }
+
 
   return 0;
 }
