@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <bitset>
+#include <map>
 
 using namespace std;
 
@@ -48,6 +49,36 @@ void algoritmoShannonFano(vector<int>& occurrenceNums, vector<string>& codeWord,
     // Recursão para os dois grupos
     algoritmoShannonFano(occurrenceNums, codeWord, startRange, splitIndex+1);
     algoritmoShannonFano(occurrenceNums, codeWord, splitIndex+1, finishRange);
+}
+
+// Função para a decodificação da string codificada
+string descompressorShannonFano(const string& codificado, const vector<int>& letrasPres, const vector<string>& palavraCod) {
+    // Criar um mapa para associar o código binário a cada letra
+    map<string, char> codigoParaLetra;
+    
+    for (int i = 0; i < letrasPres.size(); i++) {
+        if (letrasPres[i] == 26) {  // Espaco
+            codigoParaLetra[palavraCod[i]] = ' ';
+        } else {
+            codigoParaLetra[palavraCod[i]] = 'A' + letrasPres[i];
+        }
+    }
+    
+    string mensagemDecodificada = "";
+    string codigoAtual = "";
+    
+    // Percorrer o código codificado e decodificar
+    for (char c : codificado) {
+        codigoAtual += c;  // Acumula o código binário
+        
+        if (codigoParaLetra.find(codigoAtual) != codigoParaLetra.end()) {
+            // Se o código binário corresponde a uma letra, adiciona à mensagem decodificada
+            mensagemDecodificada += codigoParaLetra[codigoAtual];
+            codigoAtual = "";  // Reseta para o próximo código
+        }
+    }
+    
+    return mensagemDecodificada;
 }
 
 // Um algoritmo de bubble sort (n^2), como sao poucos valores, nao se torna tao pesado.
@@ -210,6 +241,11 @@ int main()
   }
 
   cout << "\nFrase Codificada: " << codificado << "\n\n";
+
+  // Decodificando a mensagem
+  string mensagemDecodificada = descompressorShannonFano(codificado, letrasPres, palavraCod);
+  
+  cout << "Mensagem decodificada: " << mensagemDecodificada << endl;
 
   return 0;
 }
