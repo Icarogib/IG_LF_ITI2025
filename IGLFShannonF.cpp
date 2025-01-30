@@ -51,34 +51,61 @@ void algoritmoShannonFano(vector<int>& occurrenceNums, vector<string>& codeWord,
     algoritmoShannonFano(occurrenceNums, codeWord, splitIndex+1, finishRange);
 }
 
-// Função para a decodificação da string codificada
+// Função para a decodificacao da string codificada
 string descompressorShannonFano(const string& codificado, const vector<int>& letrasPres, const vector<string>& palavraCod) {
-    // Criar um mapa para associar o código binário a cada letra
+    // Criar um mapa para associar o codigo binario a cada letra
     map<string, char> codigoParaLetra;
     
-    for (int i = 0; i < letrasPres.size(); i++) {
-        if (letrasPres[i] == 26) {  // Espaco
-            codigoParaLetra[palavraCod[i]] = ' ';
+    // Passando o codigo para cada letra fica mais facil de calcular qual a letra do codigo
+    for ( int i = 0; i < letrasPres.size(); i++ ) {
+        if ( letrasPres[i] == 26 ) {  // Espaco
+            codigoParaLetra[ palavraCod[i] ] = ' ';
         } else {
-            codigoParaLetra[palavraCod[i]] = 'A' + letrasPres[i];
+            codigoParaLetra[ palavraCod[i] ] = 'A' + letrasPres[i];
         }
     }
     
     string mensagemDecodificada = "";
     string codigoAtual = "";
     
-    // Percorrer o código codificado e decodificar
-    for (char c : codificado) {
-        codigoAtual += c;  // Acumula o código binário
+    // Percorrer o codigo codificado e decodificar
+    for ( char c : codificado ) {
+        // Soma a quantidade do codigo binario
+        codigoAtual += c;  
         
-        if (codigoParaLetra.find(codigoAtual) != codigoParaLetra.end()) {
-            // Se o código binário corresponde a uma letra, adiciona à mensagem decodificada
+        // Se o codigo binario corresponde a uma letra, adiciona a mensagem decodificada
+        if ( codigoParaLetra.find(codigoAtual) != codigoParaLetra.end() ) {
+
             mensagemDecodificada += codigoParaLetra[codigoAtual];
-            codigoAtual = "";  // Reseta para o próximo código
+            codigoAtual = "";  // Reseta para o proximo codigo
         }
     }
     
     return mensagemDecodificada;
+}
+
+// Calculo da razao de compressao.
+float calcularRazaoCompressao(int totalSimbolos, const vector<int> letrasPres, const vector<string> palavraCod, int quantSimbolo[]) {
+    float somaBits = 0;
+    int j = 0;
+    
+    // Passa por cada letra presente
+    for (int i : letrasPres) {
+        //char c = (letrasPres[i] == 26) ? ' ' : 'A' + letrasPres[i];
+
+        int ocorrencias = quantSimbolo[i];  // Contar ocorrencias do simbolo
+        //cout << "\nSimbolo/Quant " << i << " - " << (char)(i + 'A') << " : " << quantSimbolo[i];
+        
+        // Soma os bits necessarios para cada símbolo
+        somaBits += ocorrencias * palavraCod[j].size();
+        j++;
+    }
+
+    // Faz a divisao da formula
+    float numeroMedioBitsPorSimbolo = somaBits / totalSimbolos;
+    
+    // E logo apos calcula a razão de compressão
+    return 5 / numeroMedioBitsPorSimbolo;
 }
 
 // Um algoritmo de bubble sort (n^2), como sao poucos valores, nao se torna tao pesado.
@@ -106,14 +133,18 @@ void sort(vector<int> &simbPresentes, int contSimb[])
 }
 
 // Funcao para ordenar por probabilidade.
-void sortByProb( vector<int> simbPresentes, vector<int> &newOrdenado, vector<int> ordemProb ){
+void sortByProb( vector<int> &simbPresentes, vector<int> ordemProb ){
+  vector<int> newOrdenado;
+
   for ( int i : ordemProb){
     
     if (find(simbPresentes.begin(), simbPresentes.end(), i) == simbPresentes.end()) continue;
     else
       newOrdenado.push_back (i);
   }
-
+  simbPresentes.clear();
+  simbPresentes = newOrdenado;
+  
 }
 
 int main()
@@ -159,11 +190,11 @@ int main()
 
   // ====================================== Sort ==========================
 
-  // Sort por probabilidade e cria um novo array ordenado (para nao alterar o original)
-  //sortByProb( letrasPres, letrasOrdem, ordemProb );
+  // Sort por probabilidade e cria um novo array ordenado
+  sortByProb( letrasPres, ordemProb );
 
   // Bubble sort antes de qualquer operacao! (alterando o original)
-  sort(letrasPres, countLetters);
+  //sort(letrasPres, countLetters);
 
   // Guarda a palavra codigo (ex: 000 ou 101... etc)
   vector<string> palavraCod;  
@@ -245,7 +276,11 @@ int main()
   // Decodificando a mensagem
   string mensagemDecodificada = descompressorShannonFano(codificado, letrasPres, palavraCod);
   
-  cout << "Mensagem decodificada: " << mensagemDecodificada << endl;
+  cout << "Frase decodificada: " << mensagemDecodificada << endl;
+
+  float razao = calcularRazaoCompressao( input.size(), letrasPres, palavraCod, countLetters);
+
+  cout << "Razao de compressao: " << razao;
 
   return 0;
 }
