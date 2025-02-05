@@ -1,8 +1,11 @@
-// ***********************************
-// *       Shannon Fano by           *
-// *   Luis Felipe e Icaro Gibson    *
-// *      04/02/2025 - ITI           *
-// ***********************************
+// **********************************************
+// *             Shannon Fano by                *
+// *       Luis Felipe e Icaro Gibson           *
+// *            04/02/2025 - ITI                *
+// *                                            *
+// * https://github.com/Icarogib/IG_LF_ITI2025  *
+// *                                            *
+// **********************************************
 //  Para executar o código, é necessário ter uma versão do
 // compilador para c++ (mingw - G++ ou equivalente)
 // então é compilado com:
@@ -13,7 +16,8 @@
 //
 //  .\ShannonFanoIDLF
 //
-//  (Feito no VSCode e g++ 6.3.0 )
+//  ( Feito no VSCode e g++ 6.3.0 )
+// 
 
 #include <algorithm>
 #include <iostream>
@@ -263,6 +267,7 @@ int main()
   // Guarda a probabilidade/quantidade de cada letra
   vector<float> probnumletras;
 
+  // Seletor sort ( 1 - probabilidade / 0 - quantidade )
   if (BYPROB){
   // Sort por probabilidade e cria um novo array ordenado
     sortByProb( letrasPres, ordemProb );
