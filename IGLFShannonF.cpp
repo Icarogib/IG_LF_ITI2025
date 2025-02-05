@@ -1,18 +1,20 @@
-#include <iostream>
 #include <algorithm>
-#include <ctime>
+#include <iostream>
 #include <cstdlib>
-#include <cmath>
 #include <string>
 #include <vector>
 #include <bitset>
+#include <cmath>
+#include <ctime>
+#include <map>
+
+#define BYPROB 1
 
 using namespace std;
 
 // O algoritmo de Shannon Fano em si
 // Passamos a quantidade de cada letra (em ordem decrescente), uma string vazia para adicionar a palavra chave, o inicio e o fim de onde ele tem de "dividir".
-
-void algoritmoShannonFano(vector<int>& occurrenceNums, vector<string>& codeWord, int startRange, int finishRange) {
+void algoritmoShannonFano(vector<float>& occurrenceNums, vector<string>& codeWord, int startRange, int finishRange) {
     // Condição de parada
     if (startRange >= finishRange || startRange == finishRange-1) return; 
 
@@ -50,6 +52,60 @@ void algoritmoShannonFano(vector<int>& occurrenceNums, vector<string>& codeWord,
     algoritmoShannonFano(occurrenceNums, codeWord, splitIndex+1, finishRange);
 }
 
+// Função para a decodificacao da string codificada
+string descompressorShannonFano(const string& codificado, const vector<int>& letrasPres, const vector<string>& palavraCod) {
+    // Criar um mapa para associar o codigo binario a cada letra
+    map<string, char> codigoParaLetra;
+    
+    // Passando o codigo para cada letra fica mais facil de calcular qual a letra do codigo
+    for ( int i = 0; i < letrasPres.size(); i++ ) {
+        if ( letrasPres[i] == 26 ) {  // Espaco
+            codigoParaLetra[ palavraCod[i] ] = ' ';
+        } else {
+            codigoParaLetra[ palavraCod[i] ] = 'A' + letrasPres[i];
+        }
+    }
+    
+    string mensagemDecodificada = "";
+    string codigoAtual = "";
+    
+    // Percorrer o codigo codificado e decodificar
+    for ( char c : codificado ) {
+        // Soma a quantidade do codigo binario
+        codigoAtual += c;  
+        
+        // Se o codigo binario corresponde a uma letra, adiciona a mensagem decodificada
+        if ( codigoParaLetra.find(codigoAtual) != codigoParaLetra.end() ) {
+
+            mensagemDecodificada += codigoParaLetra[codigoAtual];
+            codigoAtual = "";  // Reseta para o proximo codigo
+        }
+    }
+    
+    return mensagemDecodificada;
+}
+
+// Calculo da razao de compressao.
+float calcularRazaoCompressao(int totalSimbolos, const vector<int> letrasPres, const vector<string> palavraCod, int quantSimbolo[]) {
+    float somaBits = 0;
+    int j = 0;
+    
+    // Passa por cada letra presente
+    for (int i : letrasPres) {
+        int ocorrencias = quantSimbolo[i];  // Contar ocorrencias do simbolo
+        
+        // Soma os bits necessarios para cada símbolo
+        somaBits += ocorrencias * palavraCod[j].size();
+        j++;
+    }
+
+    // Faz a divisao da formula
+    float numeroMedioBitsPorSimbolo = somaBits / totalSimbolos;
+    
+    // E logo apos calcula a razão de compressão
+    return 5 / numeroMedioBitsPorSimbolo;
+}
+
 // Um algoritmo de bubble sort (n^2), como sao poucos valores, nao se torna tao pesado.
 void sort(vector<int> &simbPresentes, int contSimb[])
 {
@@ -75,19 +131,25 @@ void sort(vector<int> &simbPresentes, int contSimb[])
 }
 
 // Funcao para ordenar por probabilidade.
-void sortByProb( vector<int> simbPresentes, vector<int> &newOrdenado, vector<int> ordemProb ){
+void sortByProb( vector<int> &simbPresentes, vector<int> ordemProb ){
+  vector<int> newOrdenado;
+
+  // Procura o valor comparando pela ordem de qual eh maior
   for ( int i : ordemProb){
     
     if (find(simbPresentes.begin(), simbPresentes.end(), i) == simbPresentes.end()) continue;
     else
       newOrdenado.push_back (i);
   }
-
+  simbPresentes.clear();
+  // Coloca o nono substituindo o vector original
+  simbPresentes = newOrdenado;
+  
 }
 
 int main()
 {
-  string input = "ICARO E SALSICHA";
+  string input = "LUIS FELIPE TOLENTINO LEMOS SAO PAULO SAO PAULO";
   cout << "\n---------- Frase Inserida ----------\n\nFrase:\t" << input << endl;
   
   // Contagem de cada letra em específico (em ordem alfabética)
@@ -110,6 +172,7 @@ int main()
   for (int i = 0; i < input.length(); i++) {          // Loop para contar cada char
       char c = input[i];
 
+      if ( c == ' ' && c == input[i-1]) continue;     // Se o espaço for repetido, pule esse espaço
       if ( c == ' ' ){                                // Se for um espaco, conte
         countLetters[26] += 1;
         if ( countLetters[26] == 1 )                  // E adicione o espaco nos simbolos presentes
@@ -127,23 +190,29 @@ int main()
 
 
   // ====================================== Sort ==========================
+  
+  // Guarda a probabilidade/quantidade de cada letra
+  vector<float> probnumletras;
 
-  // Sort por probabilidade e cria um novo array ordenado (para nao alterar o original)
-  //sortByProb( letrasPres, letrasOrdem, ordemProb );
+  if (BYPROB){
+  // Sort por probabilidade e cria um novo array ordenado
+    sortByProb( letrasPres, ordemProb );
+  
+  // Adiciona as probabilidade de cada letra individual em um vector (ex: A = 4... B = 3...)
+    for ( int i : letrasPres ) probnumletras.push_back(probPT[i]);
+    
 
+  }else{
   // Bubble sort antes de qualquer operacao! (alterando o original)
-  sort(letrasPres, countLetters);
+    sort(letrasPres, countLetters);
+  
+  // Adiciona as quantidades de cada letra individual em um vector (ex: A = 4... B = 3...)
+    for ( int i : letrasPres ) probnumletras.push_back(countLetters[i]);
+  }
 
   // Guarda a palavra codigo (ex: 000 ou 101... etc)
   vector<string> palavraCod;  
-  // Guarda a quantidade de cada letra (em ordem decrescente)
-  vector<int> quantLetraOrd;  
-
-  // Adiciona as quantidades de cada letra individual em um vector (ex: A = 4... B = 3...)
-  for ( int i : letrasPres ){
-    quantLetraOrd.push_back(countLetters[i]);
-  }
-
+  
   // Passamos a quantidade de letras presentes (ex: abcd = 4 letras)
   int quantPorLetra = letrasPres.size();
   
@@ -155,11 +224,11 @@ int main()
   cout << "\n---------- Shannon Fano -----------" << endl;
   
   // Chamada do algoritmo shannon fano (alterando palavra código)
-  algoritmoShannonFano( quantLetraOrd, palavraCod, 0, quantPorLetra );
+  algoritmoShannonFano( probnumletras, palavraCod, 0, quantPorLetra );
 
   // Prints Finais (tabela)
   cout << "\nQuant let: ";
-  for ( int i : quantLetraOrd){
+  for ( float i : probnumletras){
     cout << "\t(" << i << ")";
   }
   cout << "\nLetra do Cod: ";
@@ -210,6 +279,16 @@ int main()
   }
 
   cout << "\nFrase Codificada: " << codificado << "\n\n";
+
+  // Decodificando a mensagem
+  string mensagemDecodificada = descompressorShannonFano(codificado, letrasPres, palavraCod);
+  
+  cout << "Frase decodificada: " << mensagemDecodificada << endl;
+
+  // Calculando a razao de compressao
+  float razao = calcularRazaoCompressao( input.size(), letrasPres, palavraCod, countLetters);
+
+  cout << "Razao de compressao: " << razao;
 
   return 0;
 }
