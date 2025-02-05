@@ -1,3 +1,20 @@
+// ***********************************
+// *       Shannon Fano by           *
+// *   Luis Felipe e Icaro Gibson    *
+// *      04/02/2025 - ITI           *
+// ***********************************
+//  Para executar o código, é necessário ter uma versão do
+// compilador para c++ (mingw - G++ ou equivalente)
+// então é compilado com:
+//  
+//  g++ .\IGLFShannonF.cpp -o ShannonFanoIDLF
+//
+//  E executado com:
+//
+//  .\ShannonFanoIDLF
+//
+//  (Feito no VSCode e g++ 6.3.0 )
+
 #include <algorithm>
 #include <iostream>
 #include <cstdlib>
