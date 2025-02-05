@@ -149,7 +149,7 @@ void sortByProb( vector<int> &simbPresentes, vector<int> ordemProb ){
 
 int main()
 {
-  string input = "ICAROOIOXY";
+  string input = "LUIS FELIPE TOLENTINO LEMOS SAO PAULO SAO PAULO";
   cout << "\n---------- Frase Inserida ----------\n\nFrase:\t" << input << endl;
   
   // Contagem de cada letra em específico (em ordem alfabética)
@@ -172,6 +172,7 @@ int main()
   for (int i = 0; i < input.length(); i++) {          // Loop para contar cada char
       char c = input[i];
 
+      if ( c == ' ' && c == input[i-1]) continue;     // Se o espaço for repetido, pule esse espaço
       if ( c == ' ' ){                                // Se for um espaco, conte
         countLetters[26] += 1;
         if ( countLetters[26] == 1 )                  // E adicione o espaco nos simbolos presentes
