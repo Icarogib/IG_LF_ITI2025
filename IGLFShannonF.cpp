@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <bitset>
@@ -147,9 +148,60 @@ void sortByProb( vector<int> &simbPresentes, vector<int> ordemProb ){
   
 }
 
+// Salvamos os bits em um arquivo binário, e retornamos a 
+// quantidade de bits desnecessários para retirarmos após o final dos dados
+int salvarBits(const string& msg, FILE* arquivo) {
+  // Pegamos o tamanho da mensagem toda, cada 1 e 0 sendo 1bit
+  int num_bits = msg.length();
+  // Numero total em bytes para o arquivo final
+  int num_bytes = (num_bits + 7) / 8;  
+
+  // Valor para ser retornado pela funcao para ignorarmos
+  int ignorado = (num_bytes * 8) - num_bits;
+
+  // Passamos por cada valor e salvamos seu bit no arquivo (de 8 bits em 8 bits)
+  for (int i = 0; i < num_bytes; i++) { 
+      unsigned char byte = 0;
+
+      // Aqui pegamos de bit a bit
+      for (int j = 0; j < 8; j++) { 
+          int bit_index = i * 8 + j;
+          if (bit_index < num_bits && msg[bit_index] == '1') {
+              byte |= (1 << (7 - j));  
+          }
+      }
+      // Escrevemos o valor do byte completo
+      fwrite(&byte, 1, 1, arquivo); 
+  }
+  return ignorado;
+}
+
+vector<unsigned char> lerArquivoBinario(const string& nomeArquivo) {
+    // Abrimos o arquivo binario para a leitura
+    ifstream arquivo(nomeArquivo, ios::binary | ios::ate);
+
+    if (!arquivo) {
+        cerr << "Erro ao abrir o arquivo para leitura!" << endl;
+        return {};
+    }
+
+    // Obtém tamanho do arquivo (parte obtida na internet)
+    streamsize tamanho = arquivo.tellg(); 
+    arquivo.seekg(0, ios::beg); 
+
+    vector<unsigned char> buffer(tamanho); // Cria um vetor para armazenar os dados
+    if (!arquivo.read(reinterpret_cast<char*>(buffer.data()), tamanho)) {
+        cerr << "Erro ao ler o arquivo!" << endl;
+        return {};
+    }
+
+    return buffer;
+}
+
 int main()
 {
-  string input = "LUIS FELIPE TOLENTINO LEMOS SAO PAULO SAO PAULO";
+  string input = "ICARO DUTRA GIBSON DA SILVA CAMPINA GRANDE PARAIBA";
+
   cout << "\n---------- Frase Inserida ----------\n\nFrase:\t" << input << endl;
   
   // Contagem de cada letra em específico (em ordem alfabética)
@@ -201,7 +253,6 @@ int main()
   // Adiciona as probabilidade de cada letra individual em um vector (ex: A = 4... B = 3...)
     for ( int i : letrasPres ) probnumletras.push_back(probPT[i]);
     
-
   }else{
   // Bubble sort antes de qualquer operacao! (alterando o original)
     sort(letrasPres, countLetters);
@@ -226,7 +277,7 @@ int main()
   // Chamada do algoritmo shannon fano (alterando palavra código)
   algoritmoShannonFano( probnumletras, palavraCod, 0, quantPorLetra );
 
-  // Prints Finais (tabela)
+  // Prints Finais 
   cout << "\nQuant let: ";
   for ( float i : probnumletras){
     cout << "\t(" << i << ")";
@@ -242,8 +293,6 @@ int main()
   for ( int i = 0; i < quantPorLetra; i++ ){
     cout << "\t" << palavraCod.at(i) ;
   }
-
-  // -------------------- Codificacao -------------------------
 
   cout << "\n\n---------- Codificacao -----------" << endl;
 
@@ -278,6 +327,45 @@ int main()
     }
   }
 
+
+  // ================= Abertura de arquivo =========================
+
+  FILE* arquivo = fopen("saida.bin", "wb");
+
+  if (!arquivo) {
+      cerr << "Erro ao abrir o arquivo!" << endl;
+      return 1;
+  }
+
+  // Salvamos a quantidade de bits ignorados enquanto ele salva os dados em um arquivo binário.
+  int ignore = salvarBits(codificado, arquivo);
+  fclose(arquivo);
+
+  cout << "\nBits salvos em saida.bin!" << endl;
+
+  // =================== Leitura de arquivo ========================
+
+  codificado = "";
+  vector<unsigned char> dados = lerArquivoBinario("saida.bin");
+
+  if (!dados.empty()) {
+      cout << "\nArquivo lido com sucesso!" << endl;
+      bitset<8> bytesCod;
+
+      // Passa cada Byte para a string
+      for (unsigned char byte : dados) {
+        bytesCod = bitset<8>(byte);
+        codificado += bytesCod.to_string();
+      }
+      cout << endl;
+
+      // Remove os ultimos a serem ignorados
+      for ( int i = 0 ; i < ignore; i++ ){
+        codificado.pop_back();
+      }
+  }
+
+  cout << "---------- Resultados -----------" << endl;
   cout << "\nFrase Codificada: " << codificado << "\n\n";
 
   // Decodificando a mensagem
@@ -285,10 +373,14 @@ int main()
   
   cout << "Frase decodificada: " << mensagemDecodificada << endl;
 
+  cout << "\nTamanho da frase original: \t" << input.size() << " Bytes" << endl;
+  cout << "\nTamanho do arquivo Binario: \t" << dados.size() << " Bytes" << endl;
+
   // Calculando a razao de compressao
   float razao = calcularRazaoCompressao( input.size(), letrasPres, palavraCod, countLetters);
 
-  cout << "Razao de compressao: " << razao;
+  cout << "\nRazao de compressao: " << razao << endl;
+  cout << endl;
 
   return 0;
 }
